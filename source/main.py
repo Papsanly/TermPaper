@@ -10,7 +10,7 @@ class InvertMatrixApp:
         self._create_objects()
 
     def _create_objects(self):
-        label = tk.Label('Hello world')
+        pass
 
     def run(self):
         """Run main loop"""
