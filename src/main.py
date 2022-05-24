@@ -1,4 +1,6 @@
 import pygame
+
+from board import Board
 from screen import Screen
 from settings import Settings
 from time_control import clock
@@ -10,6 +12,9 @@ class ArrowsGame:
     def __init__(self):
         """Init game objects"""
         pygame.init()
+
+        # create game objects
+        self.board = Board()
 
         # get screen surface to create window
         self.screen = Screen.surface
@@ -28,6 +33,13 @@ class ArrowsGame:
 
     def _update_screen(self):
         """Render updated objects on screen and update screen"""
+        # fill background
+        Screen.surface.fill(Screen.bg_color)
+
+        # redraw objects
+        self.board.draw(Screen.surface)
+
+        # update screen to expose newly drawn objects
         pygame.display.update()
 
     def run(self):

@@ -7,8 +7,8 @@ from pygame.math import Vector2
 class Settings:
     """Class to store settings for the app"""
 
-    grid_count: Vector2 = Vector2(8, 8)
-    grid_size: int = 100
+    grid_count: Vector2 = Vector2(12, 12)
+    grid_size: int = 75
     fps = 120
 
     @classmethod
