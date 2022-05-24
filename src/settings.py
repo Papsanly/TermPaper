@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pygame.math import Vector2
 
 
-@dataclass
+@dataclass(frozen=True)
 class Settings:
     """Class to store settings for the app"""
 
