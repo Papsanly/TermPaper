@@ -1,7 +1,7 @@
 import pygame
 from dataclasses import dataclass
 
-from settings import Settings
+from control.settings import Settings
 
 
 @dataclass

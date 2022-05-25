@@ -1,4 +1,4 @@
-from settings import Settings
+from control.settings import Settings
 from pygame.math import Vector2
 
 
