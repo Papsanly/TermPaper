@@ -1,6 +1,7 @@
 import pygame
 from dataclasses import dataclass
 
+from control import colors
 from control.settings import Settings
 
 
@@ -10,7 +11,7 @@ class Screen:
 
     surface = pygame.display.set_mode(Settings.get_resolution())
     rect = surface.get_rect()
-    bg_color = (29, 29, 38)
+    bg_color = colors.background
 
     @classmethod
     def set_caption(cls, name: str) -> None:
