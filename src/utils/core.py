@@ -9,31 +9,33 @@ from control.settings import Settings
 class Core:
     """Class for various functions and variables for core game logic"""
 
-    arrow_directions: list[tuple[int, int], ...] = [
+    arrow_directions: list[tuple[int, int]] = [
         (1, -1), (1, 0), (1, 1), (0, 1),
         (-1, 1), (-1, 0), (-1, -1), (0, -1),
     ]
 
-    arrow_sets: dict[tuple[int, int], list[tuple[int, int], ...]] = {
+    arrow_sets: dict[tuple[int, int], list[tuple[int, int]]] = {
         (0, -1): ((0, 1), (1, 1), (-1, 1)),
         (1, 0): ((-1, 0), (-1, 1), (-1, -1)),
         (-1, 0): ((1, 0), (1, 1), (1, -1)),
         (0, 1): ((0, -1), (1, -1), (-1, -1))
     }
 
-    forbidden_directions: dict[tuple[int, int], list[tuple[int, int], ...]] = {
+    forbidden_directions: dict[tuple[int, int], list[tuple[int, int]]] = {
         (0, -1): [(-1, 1), (1, 1)],
         (1, 0): [(-1, -1), (-1, 1)],
         (-1, 0): [(1, -1), (1, 1)],
         (0, 1): [(-1, -1), (1, -1)]
     }
 
-    arrows: dict[tuple[int, int], list[tuple[int, int], ...]] = {}
-    numbers: list[list[int, ...], ...] = []
+    arrows: dict[tuple[int, int], list[tuple[int, int]]] = {}
+    numbers: list[list[int]] = []
 
     @classmethod
-    def gen_arrows(cls):
-        """Generate arrows dict with keys as direction on game board and list of arrows as values"""
+    def gen_arrows(cls) -> None:
+        """
+        Generate arrows dict with keys as direction on game board and list of arrows as values
+        """
 
         arrows = {}
         for arrow_set in cls.arrow_sets:
@@ -47,8 +49,14 @@ class Core:
         cls.arrows = arrows
 
     @classmethod
-    def get_possible_directions(cls, arrow_set, arrow_num):
-        """Get possible arrow directions for given arrow location"""
+    def get_possible_directions(cls, arrow_set: tuple[int, int], arrow_num: int) -> list[tuple[int, int]]:
+        """
+        Get possible arrow directions for given arrow location
+
+        :return: List of possible directions that arrow can point to
+        :param arrow_set: Direction in which the arrow is located
+        :param arrow_num: Sequence number of arrow on arrow set counting from up or left
+        """
         grid_count = Settings.grid_count.x if arrow_set in [(0, -1), (0, 1)] else Settings.grid_count.y
         possible_directions = list(cls.arrow_sets[arrow_set])
         if arrow_num == 0:
@@ -59,8 +67,13 @@ class Core:
 
     @classmethod
     def get_position(cls, arrows_set_direction: tuple[int, int], arrow_num: int) -> Vector2:
-        """Get position relative to board of given arrow"""
-        position = Vector2()
+        """
+        Get position relative to board of given arrow
+
+        :return: Position vector of arrow relative to game board
+        :param arrows_set_direction: Direction in which the arrow is located
+        :param arrow_num: Sequence number of arrow on arrow set counting from up or left
+        """
         if arrows_set_direction == (0, -1):
             position = arrow_num, -1
         elif arrows_set_direction == (1, 0):
@@ -69,12 +82,20 @@ class Core:
             position = -1, arrow_num
         elif arrows_set_direction == (0, 1):
             position = arrow_num, Settings.grid_count.y
+        else:
+            raise ValueError('arrow set direction not valid')
 
         return Vector2(position)
 
     @classmethod
     def get_span(cls, position: Vector2, arrow: tuple[int, int] | None = None) -> list[Vector2, ...]:
-        """Get all grid squares that given arrow points to"""
+        """
+        Get all grid squares that given arrow points to
+
+        :return: List of grid square positions that given arrow points to
+        :param position: Position vector of arrow relative to game board
+        :param arrow: Direction in which arrow points to
+        """
         if not arrow:
             return []
 
@@ -93,6 +114,12 @@ class Core:
 
     @classmethod
     def get_pointings(cls, grid_square: Vector2) -> list[tuple[tuple[int, int], int]]:
+        """
+        Gen of arrows that point to specified location on board
+
+        :return: List of arrow sets and arrow numbers that point to given grid square
+        :param grid_square: Position of grid square relative to board
+        """
         result = []
         for arrows_set_direction, arrows_set in cls.arrows.items():
             for arrow_num, arrow in enumerate(arrows_set):
@@ -104,18 +131,21 @@ class Core:
 
     @classmethod
     def count_pointings(cls, grid_square: Vector2) -> int:
-        """Count number of arrows that point to specified location on board"""
-        result = 0
-        for arrows_set_direction, arrows_set in cls.arrows.items():
-            for arrow_num, arrow in enumerate(arrows_set):
-                position = cls.get_position(arrows_set_direction, arrow_num)
-                if arrow:
-                    if grid_square in cls.get_span(position, arrow):
-                        result += 1
-        return result
+        """
+        Count number of arrows that point to specified location on board
+
+        :return: Number of arrows that point to given grid square
+        :param grid_square: Position of grid square relative to board
+        """
+        return len(cls.get_pointings(grid_square))
 
     @classmethod
-    def evaluate_correctness(cls):
+    def evaluate_correctness(cls) -> list[tuple[int, int]]:
+        """
+        Get all numbers that don't match with number of arrows that point to them
+
+        :return: List of numbers, values of which don't match with number of arrows that point to them
+        """
         wrong_numbers = []
         for col, numbers_col in enumerate(cls.numbers):
             for row, number in enumerate(numbers_col):
@@ -124,8 +154,10 @@ class Core:
         return wrong_numbers
 
     @classmethod
-    def gen_numbers(cls):
-        """Generate numbers matrix based on previously generated arrows"""
+    def gen_numbers(cls) -> None:
+        """
+        Generate numbers matrix based on previously generated arrows
+        """
         cls.gen_arrows()
 
         cls.numbers = [

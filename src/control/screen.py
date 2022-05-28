@@ -15,5 +15,10 @@ class Screen:
 
     @classmethod
     def set_caption(cls, name: str) -> None:
-        """Set caption for game window"""
+        """
+        Set caption for game window
+
+        :return: None
+        :param name: Name for window caption
+        """
         pygame.display.set_caption(name)

@@ -15,6 +15,15 @@ class Button:
 
     def __init__(self, image_path: str, position: GridPosition, color: tuple[int, ...],
                  conform_size: bool = True, scaling_nonconformal: float = None):
+        """
+        :return: None
+        :param image_path: Filepath to button image
+        :param position: Grid square position relative to board
+        :param color: Color to fill the button image with
+        :param conform_size: Scale image according to button icon size value in settings. If False -
+                             scaling_nonconformal parameter is required
+        :param scaling_nonconformal: Value to scale image with
+        """
         # basic attributes
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image_size = self.image.get_size()
@@ -47,7 +56,7 @@ class Button:
             return True
         return False
 
-    def draw(self):
+    def draw(self) -> None:
         Screen.surface.blit(self.image, self.rect)
 
     @abstractmethod

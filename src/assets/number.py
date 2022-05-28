@@ -8,6 +8,10 @@ class Number:
     """Class for number image to render on game board"""
 
     def __init__(self, value: int):
+        """
+        :return: None
+        :param value: Numeric value of number object
+        """
         # get text font and related attributes
         self.color = colors.numbers
         self.font = pygame.font.SysFont('BAUHS93', Settings.number_size)

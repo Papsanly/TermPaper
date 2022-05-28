@@ -27,5 +27,9 @@ class Settings:
 
     @classmethod
     def get_resolution(cls) -> Vector2:
-        """Get actual pixel resolution of entire screen"""
+        """
+        Get actual pixel resolution of entire screen
+
+        :return: Actual pixel resolution of entire screen
+        """
         return (cls.grid_count + 2 * cls.window_margin + Vector2(0, 1)) * cls.grid_size

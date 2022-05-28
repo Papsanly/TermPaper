@@ -15,18 +15,16 @@ from control.screen import Screen
 from control.settings import Settings
 from control.states import States
 from control.time_control import clock
-
-# set absolute path when launching from shortcuts
 from utils.core import Core
-
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class ArrowsGame:
     """Main app class"""
 
     def __init__(self):
-        """Init game objects"""
+        """
+        Init game objects
+        """
         pygame.init()
 
         # initialize game objects
@@ -38,11 +36,12 @@ class ArrowsGame:
         self.message: StartMessage | WrongMessage | CorrectMessage | None = StartMessage()
 
         # get screen surface to create window
-        self.screen = Screen.surface
         Screen.set_caption('Arrows')
 
-    def _handle_events(self):
-        """Handle pygame events queue"""
+    def _handle_events(self) -> None:
+        """
+        Handle pygame events queue
+        """
         for event in pygame.event.get():
             # handle quit event
             if event.type == pygame.QUIT:
@@ -71,13 +70,27 @@ class ArrowsGame:
                 elif States.current_state == States.GAME_END_CORRECT:
                     self._handle_end_message_correct_events(mouse_pos)
 
-    def _handle_gen_new_board_event(self, mouse_pos):
+    def _handle_gen_new_board_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Generate new board if gen_new_board_button is clicked, clear add and delete arrow buttons
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if self.gen_new_board_button.is_clicked(mouse_pos):
             self.board = Board()
             self.add_arrows_buttons.clear()
             self.delete_arrow_button = None
 
-    def _handle_add_arrow_event(self, mouse_pos):
+    def _handle_add_arrow_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Set arrow image and direction of select arrow grid square if add_arrow_button is clicked. Updates selection for
+        correct highlighting of numbers that the arrow points to. Creates delete arrow button. Creates and end session
+        button if every arrow grid square is filled and gets rid of error numbers highlighting.
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         for add_arrow_button in self.add_arrows_buttons:
             if add_arrow_button.is_clicked(mouse_pos):
                 self.board.set_arrow_image(*add_arrow_button.handle_click())
@@ -91,7 +104,14 @@ class ArrowsGame:
                     self.board.dehighlight_errors()
                     self.board.wrong_numbers = []
 
-    def _handle_delete_arrow_event(self, mouse_pos):
+    def _handle_delete_arrow_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Sets selected image and direction to None. Updates selection for correct highlighting of numbers that the arrow
+        points to. Deletes delete arrow button and end session button, gets rid of error numbers highlighting.
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if not self.delete_arrow_button:
             return
         if self.delete_arrow_button.is_clicked(mouse_pos):
@@ -103,7 +123,13 @@ class ArrowsGame:
                 self.board.dehighlight_errors()
                 self.board.wrong_numbers = []
 
-    def _handle_end_session_event(self, mouse_pos):
+    def _handle_end_session_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Evaluates correctness of arrows and sets appropriate game state
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if not self.end_session_button:
             return
         if self.end_session_button.is_clicked(mouse_pos):
@@ -115,7 +141,13 @@ class ArrowsGame:
                 States.current_state = States.GAME_END_CORRECT
                 self.message = CorrectMessage()
 
-    def _handle_arrow_selection_event(self, mouse_pos):
+    def _handle_arrow_selection_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Highlights selected arrow and numbers that it points to. Adds button for adding arrows to selected square.
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if self.board.check_arrow_selection(mouse_pos):
             self.board.handle_arrow_selection(mouse_pos)
             arrow = self.board.get_arrow(mouse_pos)
@@ -128,18 +160,37 @@ class ArrowsGame:
                 if arrow.direction:
                     self.delete_arrow_button = DeleteArrowButton(len(self.add_arrows_buttons))
 
-    def _handle_number_selection_event(self, mouse_pos):
+    def _handle_number_selection_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Highlights selected number and arrows that point to it. Clears all arrow manipulation buttons
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if self.board.check_number_selection(mouse_pos):
             self.board.handle_number_selection(mouse_pos)
             self.add_arrows_buttons.clear()
             self.delete_arrow_button = None
 
-    def _handle_start_message_events(self, mouse_pos):
+    def _handle_start_message_events(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Sets game state to active and deletes message.
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if self.message.collide_rect.collidepoint(mouse_pos):
             States.current_state = States.GAME_ACTIVE
             self.message = None
 
-    def _handle_end_message_correct_events(self, mouse_pos):
+    def _handle_end_message_correct_events(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Handles end message button click when game is over and all numbers on grid match with number of arrows that
+        point to it.
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if self.message.collide_rect_again.collidepoint(mouse_pos):
             States.current_state = States.GAME_ACTIVE
             self.board = Board()
@@ -148,7 +199,14 @@ class ArrowsGame:
         elif self.message.collide_rect_quit.collidepoint(mouse_pos):
             exit(0)
 
-    def _handle_end_message_wrong_events(self, mouse_pos):
+    def _handle_end_message_wrong_events(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Handles end message button click when game is over and at least one number on grid don't with number of arrows
+        that point to it.
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
         if self.message.collide_rect_continue.collidepoint(mouse_pos):
             self.board.highlight_errors()
             States.current_state = States.GAME_ACTIVE
@@ -160,7 +218,9 @@ class ArrowsGame:
             exit(0)
 
     def _update_screen(self):
-        """Render updated objects on screen and update screen"""
+        """
+        Render updated objects on screen and update screen
+        """
         # fill background
         Screen.surface.fill(Screen.bg_color)
 
@@ -181,7 +241,9 @@ class ArrowsGame:
         pygame.display.update()
 
     def run(self):
-        """Run main game loop"""
+        """
+        Run main game loop
+        """
         while True:
             self._handle_events()
             self._update_screen()
@@ -189,5 +251,9 @@ class ArrowsGame:
 
 
 if __name__ == '__main__':
+    # set absolute path when launching from shortcuts
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    # create and run game
     arrows_game = ArrowsGame()
     arrows_game.run()

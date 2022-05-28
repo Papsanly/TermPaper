@@ -52,70 +52,117 @@ class Board:
         # current selection indicator for managing selections
         self.currently_selected: ArrowGridSquare | NumberGridSquare | None = None
 
-    def update_selection(self):
+    def update_selection(self) -> None:
+        """
+        Deselect and select object for correct arrow adding and deletion
+        """
         selected_arrow = self.get_selected_arrow()
         if selected_arrow:
             self.handle_arrow_selection(selected_arrow.position.get_coords_center())
             self.handle_arrow_selection(selected_arrow.position.get_coords_center())
 
-    def deselect_all(self):
+    def deselect_all(self) -> None:
+        """
+        Deselect any selection
+        """
         if isinstance(self.currently_selected, ArrowGridSquare):
             self.handle_arrow_selection(self.currently_selected.position.get_coords_center())
         if isinstance(self.currently_selected, NumberGridSquare):
             self.handle_number_selection(self.currently_selected.position.get_coords_center())
 
-    def get_selected_arrow(self):
+    def get_selected_arrow(self) -> ArrowGridSquare:
+        """
+        Return selected arrow object if any were selected
+
+        :return: Arrow object that is selected if any
+        """
         for arrow in self.arrows:
             if arrow.selected:
                 return arrow
 
-    def dehighlight_errors(self):
-        """Highlight numbers that don't match"""
+    def dehighlight_errors(self) -> None:
+        """
+        Get rid of highlighting on numbers that don't match
+        """
         for number in self.numbers:
             if tuple(number.position.grid_square_pos) in self.wrong_numbers:
                 number.dehighlight_error()
 
-    def highlight_errors(self):
-        """Highlight numbers that don't match"""
+    def highlight_errors(self) -> None:
+        """
+        Highlight numbers that don't match
+        """
         for number in self.numbers:
             if tuple(number.position.grid_square_pos) in self.wrong_numbers:
                 number.highlight_error()
 
-    def check_correctness(self):
+    def check_correctness(self) -> None:
+        """
+        Load current arrows and numbers to core class and evaluate correctness
+        """
         for arrow in self.arrows:
             Core.arrows[arrow.arrow_set][arrow.arrow_num] = arrow.direction
         for number in self.numbers:
             Core.numbers[number.col][number.row] = number.value
         self.wrong_numbers = Core.evaluate_correctness()
 
-    def get_arrow(self, mouse_pos):
+    def get_arrow(self, pos: tuple[int, int]) -> ArrowGridSquare:
+        """
+        Get arrow by pixel position
+
+        :return: arrow that is under given position
+        :param pos: position to get arrow by
+        """
         for arrow in self.arrows:
-            if arrow.rect.collidepoint(mouse_pos):
+            if arrow.rect.collidepoint(pos):
                 return arrow
 
-    def set_arrow_image(self, image: pygame.Surface | None, direction: tuple[int, int] | None, highlight_color):
-        """Set arrow image for selected arrow square if any"""
+    def set_arrow_image(self, image: pygame.Surface | None, direction: tuple[int, int] | None,
+                        highlight_color: tuple[int]) -> None:
+        """
+        Set arrow image for selected arrow square if any
+
+        :return: None
+        :param image: New image to set
+        :param direction: direcion of arrow on image to set direction attribute
+        :param highlight_color: color that object was highlighted to restore it
+        """
         for arrow in self.arrows:
             if arrow.selected:
                 arrow.set_image(image, direction)
                 arrow.select(highlight_color)
 
-    def check_arrow_selection(self, mouse_pos):
-        """Check if any arrow was selected"""
+    def check_arrow_selection(self, mouse_pos: tuple[int, int]) -> bool:
+        """
+        Check if arrow was selected
+
+        :return: True if arrow under current mouse position is selected
+        :param mouse_pos: Mouse position in pixel coordinates
+        """
         for arrow in self.arrows:
             if arrow.rect.collidepoint(mouse_pos):
                 return True
         return False
 
-    def check_number_selection(self, mouse_pos):
-        """Check if any number was selected"""
+    def check_number_selection(self, mouse_pos: tuple[int, int]) -> bool:
+        """
+        Check if number was selected
+
+        :return: True if number under current mouse position is selected
+        :param mouse_pos: Mouse position in pixel coordinates
+        """
         for number in self.numbers:
             if number.rect.collidepoint(mouse_pos):
                 return True
         return False
 
-    def handle_arrow_selection(self, mouse_pos):
-        """Select arrow and numbers it points to"""
+    def handle_arrow_selection(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Select arrow and numbers it points to
+
+        :return: None
+        :param mouse_pos: Current mouse position
+        """
         # deselect previously selected numbers and its arrows
         if isinstance(self.currently_selected, NumberGridSquare):
             pointing_arrows = Core.get_pointings(Vector2(self.currently_selected.col, self.currently_selected.row))
@@ -150,8 +197,13 @@ class Board:
         else:
             self.currently_selected = None
 
-    def handle_number_selection(self, mouse_pos):
-        """Select number and arrows that point to it"""
+    def handle_number_selection(self, mouse_pos: tuple[int, int]):
+        """
+        Select number and arrows that point to it
+
+        :return: None
+        :param mouse_pos: Current mouse position
+        """
         # deselect previously selected arrow and numbers that it points to
         if isinstance(self.currently_selected, ArrowGridSquare):
             pointing_numbers = Core.get_span(self.currently_selected.position.grid_square_pos,
@@ -189,8 +241,10 @@ class Board:
         else:
             self.currently_selected = None
 
-    def draw(self):
-        """Draw object to given surface"""
+    def draw(self) -> None:
+        """
+        Draw object to given surface
+        """
         # draw numbers grid squares
         for number in self.numbers:
             number.draw()

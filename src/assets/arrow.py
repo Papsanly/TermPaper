@@ -9,7 +9,11 @@ from control.settings import Settings
 class Arrow:
     """Class for rendering arrows"""
 
-    def __init__(self, direction):
+    def __init__(self, direction: tuple[int, int]):
+        """
+        :return: None
+        :param direction: Direction of arrow to render appropriate image
+        """
         # load image and scale
         arrow_image = pygame.image.load(f'../assets/arrows/{direction}.png').convert_alpha()
 

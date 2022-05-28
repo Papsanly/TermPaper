@@ -11,6 +11,10 @@ class GridSquare:
     """Class for grid square objects that hold arrows or numbers"""
 
     def __init__(self, content: pygame.Surface | None):
+        """
+        :return: None
+        :param content: Image to fill the square with
+        """
         super().__init__()
         # frame that surrounds the square
         self.frame_size = (Settings.grid_size, Settings.grid_size)
@@ -36,13 +40,25 @@ class GridSquare:
 
         self.rect = self.image.get_rect()
 
-    def draw(self):
+    def draw(self) -> None:
         Screen.surface.blit(self.image, self.rect)
 
-    def select(self, highlight_color):
+    def select(self, highlight_color: tuple[int]) -> None:
+        """
+        Add given color to image
+
+        :return: None
+        :param highlight_color: Color to restore highlighting with
+        """
         self.selected = True
         self.image.fill(highlight_color, special_flags=BLEND_RGB_ADD)
 
-    def deselect(self, highlight_color):
+    def deselect(self, highlight_color: tuple[int]) -> None:
+        """
+        Subtract given color from image
+
+        :return: None
+        :param highlight_color: Color to restore highlighting with
+        """
         self.selected = False
         self.image.fill(highlight_color, special_flags=BLEND_RGB_SUB)

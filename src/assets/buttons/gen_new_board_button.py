@@ -1,6 +1,5 @@
 from pygame.math import Vector2
 
-from assets.board import Board
 from assets.buttons.button import Button
 from control import colors
 from control.grid_position import GridPosition
