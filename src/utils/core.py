@@ -115,7 +115,7 @@ class Core:
     @classmethod
     def get_pointings(cls, grid_square: Vector2) -> list[tuple[tuple[int, int], int]]:
         """
-        Gen of arrows that point to specified location on board
+        Get arrows that point to specified location on board
 
         :return: List of arrow sets and arrow numbers that point to given grid square
         :param grid_square: Position of grid square relative to board

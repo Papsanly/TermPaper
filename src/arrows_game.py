@@ -102,7 +102,7 @@ class ArrowsGame:
                     self.end_session_button = EndSessionButton()
                 if self.board.wrong_numbers:
                     self.board.dehighlight_errors()
-                    self.board.wrong_numbers = []
+                    self.board.wrong_numbers.clear()
 
     def _handle_delete_arrow_event(self, mouse_pos: tuple[int, int]) -> None:
         """
@@ -194,8 +194,10 @@ class ArrowsGame:
         if self.message.collide_rect_again.collidepoint(mouse_pos):
             States.current_state = States.GAME_ACTIVE
             self.board = Board()
+            self.message = None
             self.add_arrows_buttons.clear()
             self.delete_arrow_button = None
+            self.end_session_button = None
         elif self.message.collide_rect_quit.collidepoint(mouse_pos):
             exit(0)
 
@@ -214,6 +216,7 @@ class ArrowsGame:
             self.board.deselect_all()
             self.add_arrows_buttons.clear()
             self.delete_arrow_button = None
+            self.end_session_button = None
         elif self.message.collide_rect_quit.collidepoint(mouse_pos):
             exit(0)
 

@@ -8,7 +8,7 @@ class Settings:
     """Class to store settings for the app"""
 
     # basic settings
-    grid_count: Vector2 = Vector2(2, 3)
+    grid_count: Vector2 = Vector2(8, 8)
     window_margin: Vector2 = Vector2(2, 2)
     grid_size: int = 75
     fps: int = 30

@@ -57,6 +57,7 @@ class Button:
         return False
 
     def draw(self) -> None:
+        """Draw object to given surface"""
         Screen.surface.blit(self.image, self.rect)
 
     @abstractmethod
