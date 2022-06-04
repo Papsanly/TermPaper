@@ -10,7 +10,7 @@ class Settings:
     # basic settings
     grid_count: Vector2 = Vector2(8, 8)
     window_margin: Vector2 = Vector2(2, 2)
-    grid_size: int = 75
+    grid_size: int = 60
     fps: int = 30
 
     # arrows settings
