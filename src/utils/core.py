@@ -28,8 +28,48 @@ class Core:
         (0, 1): [(-1, -1), (1, -1)]
     }
 
-    arrows: dict[tuple[int, int], list[tuple[int, int]]] = {}
+    arrows: dict[tuple[int, int], list[tuple[int, int] | None]] = {}
     numbers: list[list[int]] = []
+
+    @classmethod
+    def auto_solve(cls, candidate_solution: dict[tuple[int, int], list[tuple[int, int] | None]]) -> None:
+        """
+        Automaticaly solves the puzzle using backtrasing algorithms. Returns result in 'arrows' class variable
+        """
+
+        if cls.evaluate_situation():
+            return
+        if cls.evaluate_correctness():
+            cls.arrows = candidate_solution
+        first_candidate_solution = cls.get_first_extension(candidate_solution)
+        while first_candidate_solution:
+            cls.auto_solve(first_candidate_solution)
+            first_candidate_solution = cls.get_next_candidate_solution(candidate_solution)
+
+    @classmethod
+    def get_first_extension(cls, candidate_solution):
+
+
+    @classmethod
+    def clear_arrows(cls):
+        """Sets all arrows to None"""
+
+        for arrow_set_direction, arrow_set in cls.arrows.items():
+            for arrow_num, arrow in enumerate(arrow_set):
+                cls.arrows[arrow_set_direction][arrow_num] = None
+
+    @classmethod
+    def evaluate_situation(cls) -> bool:
+        """
+        Returns True if all the squares have value less than number of arrows that point to them
+        """
+
+        for col, numbers_col in enumerate(cls.numbers):
+            for row, number in enumerate(numbers_col):
+                if number < cls.count_pointings(Vector2(col, row)):
+                    return True
+
+        return False
 
     @classmethod
     def gen_arrows(cls) -> None:

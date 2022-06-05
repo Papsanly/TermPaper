@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
+from assets.arrow import Arrow
 from assets.grid_squares.arrow_grid_square import ArrowGridSquare
 from assets.grid_squares.number_grid_square import NumberGridSquare
 from assets.number import Number
@@ -51,6 +52,16 @@ class Board:
 
         # current selection indicator for managing selections
         self.currently_selected: ArrowGridSquare | NumberGridSquare | None = None
+
+    def update_arrows(self) -> None:
+        """Updates all arrows to those stored in Core class"""
+
+        self.arrows = []
+        for arrows_set_direction, arrows_set in Core.arrows.items():
+            for arrow_num, arrow in enumerate(arrows_set):
+                self.arrows.append(ArrowGridSquare(
+                    Arrow(arrow).image, arrows_set_direction, arrow_num, arrow
+                ))
 
     def update_selection(self) -> None:
         """

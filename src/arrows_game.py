@@ -4,6 +4,7 @@ import pygame
 
 from assets.board import Board
 from assets.buttons.add_arrow_button import AddArrowButton
+from assets.buttons.auto_solve_button import AutoSolveButton
 from assets.buttons.delete_arrow_button import DeleteArrowButton
 from assets.buttons.end_session_button import EndSessionButton
 from assets.buttons.gen_new_board_button import GenNewBoardButton
@@ -33,6 +34,7 @@ class ArrowsGame:
         self.add_arrows_buttons: list = []
         self.delete_arrow_button: DeleteArrowButton | None = None
         self.end_session_button: EndSessionButton | None = None
+        self.auto_solve_button = AutoSolveButton()
         self.message: StartMessage | WrongMessage | CorrectMessage | None = StartMessage()
 
         # get screen surface to create window
@@ -58,6 +60,7 @@ class ArrowsGame:
                     self._handle_add_arrow_event(mouse_pos)
                     self._handle_delete_arrow_event(mouse_pos)
                     self._handle_end_session_event(mouse_pos)
+                    self._handle_auto_solve_event(mouse_pos)
                     # arrow and number selection event
                     self._handle_arrow_selection_event(mouse_pos)
                     self._handle_number_selection_event(mouse_pos)
@@ -69,6 +72,20 @@ class ArrowsGame:
                     self._handle_end_message_wrong_events(mouse_pos)
                 elif States.current_state == States.GAME_END_CORRECT:
                     self._handle_end_message_correct_events(mouse_pos)
+
+    def _handle_auto_solve_event(self, mouse_pos: tuple[int, int]) -> None:
+        """
+        Automaticaly generates solution with backtrasing algorithm and fills the arrow grid squares
+
+        :return: None
+        :param mouse_pos: Mouse position
+        """
+
+        if self.auto_solve_button.is_clicked(mouse_pos):
+            Core.clear_arrows()
+            Core.auto_solve()
+            self.board.update_arrows()
+            self.board.update_selection()
 
     def _handle_gen_new_board_event(self, mouse_pos: tuple[int, int]) -> None:
         """
@@ -231,6 +248,7 @@ class ArrowsGame:
         if States.current_state == States.GAME_ACTIVE:
             self.board.draw()
             self.gen_new_board_button.draw()
+            self.auto_solve_button.draw()
             for add_replace_button in self.add_arrows_buttons:
                 add_replace_button.draw()
             if self.delete_arrow_button:
