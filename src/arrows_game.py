@@ -75,17 +75,17 @@ class ArrowsGame:
 
     def _handle_auto_solve_event(self, mouse_pos: tuple[int, int]) -> None:
         """
-        Automaticaly generates solution with backtrasing algorithm and fills the arrow grid squares
+        Uses arrows generated for number generation as the solution
 
         :return: None
         :param mouse_pos: Mouse position
         """
 
         if self.auto_solve_button.is_clicked(mouse_pos):
-            Core.clear_arrows()
-            Core.auto_solve()
+            self.board.handle_auto_solve()
             self.board.update_arrows()
             self.board.update_selection()
+            self.end_session_button = EndSessionButton()
 
     def _handle_gen_new_board_event(self, mouse_pos: tuple[int, int]) -> None:
         """

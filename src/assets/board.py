@@ -53,6 +53,12 @@ class Board:
         # current selection indicator for managing selections
         self.currently_selected: ArrowGridSquare | NumberGridSquare | None = None
 
+    def clear_arrows(self) -> None:
+        """Sets all arrow square images to None and their direction"""
+        for arrow in self.arrows:
+            arrow.image = None
+            arrow.direction = None
+
     def update_arrows(self) -> None:
         """Updates all arrows to those stored in Core class"""
 
@@ -142,6 +148,13 @@ class Board:
             if arrow.selected:
                 arrow.set_image(image, direction)
                 arrow.select(highlight_color)
+
+    def handle_auto_solve(self):
+        """
+        Use initially generated arrows for number generation as solution
+        """
+        for arrow, core_arrow in zip(self.arrows, Core.arrows):
+            arrow.set_image(Arrow(core_arrow).image, core_arrow)
 
     def check_arrow_selection(self, mouse_pos: tuple[int, int]) -> bool:
         """

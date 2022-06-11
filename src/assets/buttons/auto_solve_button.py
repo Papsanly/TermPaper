@@ -13,7 +13,7 @@ class AutoSolveButton(Button):
             GridPosition((Settings.grid_count.x + 1, -2)),
             colors.arrows_button,
             False,
-            Settings.button_icon_size / 500
+            Settings.button_icon_size / 400
         )
 
     def handle_click(self):

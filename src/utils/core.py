@@ -1,4 +1,6 @@
 import random
+import copy
+import time
 
 import pygame.sprite
 from pygame.math import Vector2
@@ -28,48 +30,9 @@ class Core:
         (0, 1): [(-1, -1), (1, -1)]
     }
 
-    arrows: dict[tuple[int, int], list[tuple[int, int] | None]] = {}
+    arrows_collection_type = dict[tuple[int, int], list[tuple[int, int] | None]]
+    arrows: arrows_collection_type = {}
     numbers: list[list[int]] = []
-
-    @classmethod
-    def auto_solve(cls, candidate_solution: dict[tuple[int, int], list[tuple[int, int] | None]]) -> None:
-        """
-        Automaticaly solves the puzzle using backtrasing algorithms. Returns result in 'arrows' class variable
-        """
-
-        if cls.evaluate_situation():
-            return
-        if cls.evaluate_correctness():
-            cls.arrows = candidate_solution
-        first_candidate_solution = cls.get_first_extension(candidate_solution)
-        while first_candidate_solution:
-            cls.auto_solve(first_candidate_solution)
-            first_candidate_solution = cls.get_next_candidate_solution(candidate_solution)
-
-    @classmethod
-    def get_first_extension(cls, candidate_solution):
-
-
-    @classmethod
-    def clear_arrows(cls):
-        """Sets all arrows to None"""
-
-        for arrow_set_direction, arrow_set in cls.arrows.items():
-            for arrow_num, arrow in enumerate(arrow_set):
-                cls.arrows[arrow_set_direction][arrow_num] = None
-
-    @classmethod
-    def evaluate_situation(cls) -> bool:
-        """
-        Returns True if all the squares have value less than number of arrows that point to them
-        """
-
-        for col, numbers_col in enumerate(cls.numbers):
-            for row, number in enumerate(numbers_col):
-                if number < cls.count_pointings(Vector2(col, row)):
-                    return True
-
-        return False
 
     @classmethod
     def gen_arrows(cls) -> None:
@@ -153,15 +116,18 @@ class Core:
         return grid_squares
 
     @classmethod
-    def get_pointings(cls, grid_square: Vector2) -> list[tuple[tuple[int, int], int]]:
+    def get_pointings(cls, grid_square: Vector2, arrows=None) -> list[tuple[tuple[int, int], int]]:
         """
         Get arrows that point to specified location on board
 
         :return: List of arrow sets and arrow numbers that point to given grid square
         :param grid_square: Position of grid square relative to board
+        :param arrows: Optional if arrow set used for calculations differs from the class variable
         """
+        if not arrows:
+            arrows = cls.arrows
         result = []
-        for arrows_set_direction, arrows_set in cls.arrows.items():
+        for arrows_set_direction, arrows_set in arrows.items():
             for arrow_num, arrow in enumerate(arrows_set):
                 position = cls.get_position(arrows_set_direction, arrow_num)
                 if arrow:
@@ -170,26 +136,28 @@ class Core:
         return result
 
     @classmethod
-    def count_pointings(cls, grid_square: Vector2) -> int:
+    def count_pointings(cls, grid_square: Vector2, arrows=None) -> int:
         """
         Count number of arrows that point to specified location on board
 
         :return: Number of arrows that point to given grid square
         :param grid_square: Position of grid square relative to board
+        :param arrows: Optional if arrow set used for calculations differs from the class variable
         """
-        return len(cls.get_pointings(grid_square))
+        return len(cls.get_pointings(grid_square, arrows))
 
     @classmethod
-    def evaluate_correctness(cls) -> list[tuple[int, int]]:
+    def evaluate_correctness(cls, arrows=None) -> list[tuple[int, int]]:
         """
         Get all numbers that don't match with number of arrows that point to them
 
         :return: List of numbers, values of which don't match with number of arrows that point to them
+        :param arrows: Optional if arrow set used for calculations differs from the class variable
         """
         wrong_numbers = []
         for col, numbers_col in enumerate(cls.numbers):
             for row, number in enumerate(numbers_col):
-                if number != cls.count_pointings(Vector2(col, row)):
+                if number != cls.count_pointings(Vector2(col, row), arrows):
                     wrong_numbers.append((col, row))
         return wrong_numbers
 
