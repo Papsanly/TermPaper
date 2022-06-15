@@ -1,3 +1,5 @@
+import copy
+
 import pygame
 from pygame.math import Vector2
 
@@ -188,6 +190,9 @@ class Board:
         :param mouse_pos: Current mouse position
         """
         # deselect previously selected numbers and its arrows
+        arrows_temp = copy.deepcopy(Core.arrows)
+        for arrow in self.arrows:
+            Core.arrows[arrow.arrow_set][arrow.arrow_num] = arrow.direction
         if isinstance(self.currently_selected, NumberGridSquare):
             pointing_arrows = Core.get_pointings(Vector2(self.currently_selected.col, self.currently_selected.row))
             for arrow in self.arrows:
@@ -195,6 +200,7 @@ class Board:
                     arrow.deselect(colors.highlighted_yellow)
             self.currently_selected.deselect(colors.highlighted_blue)
             self.currently_selected = None
+        Core.arrows = arrows_temp
 
         # deselect previous arrow and its spanned numbers
         if isinstance(self.currently_selected, ArrowGridSquare):
@@ -253,6 +259,7 @@ class Board:
                 break
 
         # select current number and arrows if there is
+        arrows_temp = copy.deepcopy(Core.arrows)
         for arrow in self.arrows:
             Core.arrows[arrow.arrow_set][arrow.arrow_num] = arrow.direction
         if curr_num != self.currently_selected:
@@ -264,6 +271,8 @@ class Board:
             self.currently_selected = curr_num
         else:
             self.currently_selected = None
+
+        Core.arrows = arrows_temp
 
     def draw(self) -> None:
         """

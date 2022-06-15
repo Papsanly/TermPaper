@@ -37,7 +37,6 @@ class ArrowsGame:
         self.auto_solve_button = AutoSolveButton()
         self.message: StartMessage | WrongMessage | CorrectMessage | None = StartMessage()
 
-        # get screen surface to create window
         Screen.set_caption('Arrows')
 
     def _handle_events(self) -> None:
@@ -84,7 +83,7 @@ class ArrowsGame:
         if self.auto_solve_button.is_clicked(mouse_pos):
             self.board.handle_auto_solve()
             self.board.update_arrows()
-            self.board.update_selection()
+            self.board.deselect_all()
             self.end_session_button = EndSessionButton()
 
     def _handle_gen_new_board_event(self, mouse_pos: tuple[int, int]) -> None:
